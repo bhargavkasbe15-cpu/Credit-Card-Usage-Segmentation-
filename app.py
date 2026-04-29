@@ -44,4 +44,20 @@ else:
         # This is where your prediction logic goes
         # input_data = scaler.transform([[balance, purchases]])
         # prediction = model.predict(input_data)
-        st.info("Prediction logic should be placed here based on your model's features.")
+        st.info("Prediction logic should be placed here based on your model's features.")# 1. Collect all inputs into a list (Must be in the SAME order as your training data)
+    # Example: [Balance, Purchases, OneOff_Purchases, Installment_Purchases, etc.]
+    feature_list = [balance, purchases] 
+
+    if st.button("Predict Segment"):
+        # 2. Reshape the data for the model
+        import numpy as np
+        input_data = np.array(feature_list).reshape(1, -1)
+        
+        # 3. Scale the data (very important for Clustering!)
+        scaled_data = scaler.transform(input_data)
+        
+        # 4. Make the prediction
+        prediction = model.predict(scaled_data)
+        
+        # 5. Show the result
+        st.header(f"The Customer belongs to Cluster: {prediction[0]}")

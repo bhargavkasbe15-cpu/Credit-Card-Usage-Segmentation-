@@ -67,3 +67,22 @@ if st.button("Predict Cluster"):
 
 st.divider()
 st.caption("Powered by Scikit-Learn and Streamlit")
+import os
+import pickle
+import streamlit as st
+
+# This code tells Python to look in the SAME folder as this script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.join(BASE_DIR, "cluster_model.pkl")
+scaler_path = os.path.join(BASE_DIR, "scaler.pkl")
+
+# Debugging: This will print the path to your Streamlit screen so you can see it
+# st.write(f"Looking for model at: {model_path}")
+
+if os.path.exists(model_path) and os.path.exists(scaler_path):
+    model = pickle.load(open(model_path, "rb"))
+    scaler = pickle.load(open(scaler_path, "rb"))
+else:
+    st.error(f"Files still not found! Make sure they are in: {BASE_DIR}")
+    

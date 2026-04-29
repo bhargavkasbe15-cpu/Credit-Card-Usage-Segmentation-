@@ -1,63 +1,56 @@
 import os
 import pickle
 import streamlit as st
+import numpy as np
 
-# 1. Setup Page Config
-st.set_page_config(page_title="Credit Card Segmentation", layout="centered")
+st.set_page_config(page_title="Credit Card Segmentation", layout="wide")
 
-# 2. Define the base directory and paths
+# 1. File Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(BASE_DIR, "cluster_model (1).pkl")
 scaler_path = os.path.join(BASE_DIR, "scaler (1).pkl")
 
-# 3. Load the model and scaler
+# 2. Load Assets
 @st.cache_resource
-def load_models():
+def load_assets():
     try:
         with open(model_path, "rb") as f:
             model = pickle.load(f)
         with open(scaler_path, "rb") as f:
             scaler = pickle.load(f)
         return model, scaler
-    except FileNotFoundError:
+    except Exception as e:
         return None, None
 
-model, scaler = load_models()
+model, scaler = load_assets()
 
-# 4. User Interface
 st.title("💳 Credit Card Customer Segmentation")
-st.write("Enter customer details to predict their usage category.")
 
-if model is None or scaler is None:
-    st.error("Model files not found! Please check your GitHub repository.")
-    st.write("Folder path:", BASE_DIR)
-    st.write("Files seen by app:", os.listdir(BASE_DIR))
+if model is None:
+    st.error("Model files not found. Please check your GitHub repository.")
 else:
-    st.success("Model ready for prediction!")
+    st.success("Model loaded! Enter details below:")
 
-    # --- ADD YOUR INPUT FIELDS BELOW ---
-    # Example:
-    balance = st.number_input("Customer Balance", min_value=0.0)
-    purchases = st.number_input("Total Purchases", min_value=0.0)
+    # 3. Input Fields (Add all the columns your model needs here)
+    col1, col2 = st.columns(2)
     
-    if st.button("Predict Segment"):
-        # This is where your prediction logic goes
-        # input_data = scaler.transform([[balance, purchases]])
-        # prediction = model.predict(input_data)
-        st.info("Prediction logic should be placed here based on your model's features.")# 1. Collect all inputs into a list (Must be in the SAME order as your training data)
-    # Example: [Balance, Purchases, OneOff_Purchases, Installment_Purchases, etc.]
-    feature_list = [balance, purchases] 
+    with col1:
+        balance = st.number_input("Balance", value=0.0)
+        purchases = st.number_input("Total Purchases", value=0.0)
+        # Add more here...
 
-    if st.button("Predict Segment"):
-        # 2. Reshape the data for the model
-        import numpy as np
-        input_data = np.array(feature_list).reshape(1, -1)
+    with col2:
+        cash_advance = st.number_input("Cash Advance", value=0.0)
+        credit_limit = st.number_input("Credit Limit", value=0.0)
+        # Add more here...
+
+    # 4. The Button (With a unique key to prevent your error)
+    if st.button("Predict Segment", key="final_prediction_btn"):
+        # Make sure the list below contains ALL features in the correct order!
+        features = np.array([[balance, purchases, cash_advance, credit_limit]])
         
-        # 3. Scale the data (very important for Clustering!)
-        scaled_data = scaler.transform(input_data)
+        # Scale and Predict
+        scaled_features = scaler.transform(features)
+        cluster = model.predict(scaled_features)
         
-        # 4. Make the prediction
-        prediction = model.predict(scaled_data)
-        
-        # 5. Show the result
-        st.header(f"The Customer belongs to Cluster: {prediction[0]}")
+        st.metric(label="Assigned Cluster", value=f"Cluster {cluster[0]}")

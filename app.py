@@ -20,3 +20,6 @@ except FileNotFoundError:
     st.error(f"ERROR: Files not found.")
     st.write("I am looking in this folder:", BASE_DIR)
     st.write("Files actually present in this folder:", os.listdir(BASE_DIR))
+    # Change these lines in your script to match the actual filenames on GitHub
+model_path = os.path.join(BASE_DIR, "cluster_model (1).pkl")
+scaler_path = os.path.join(BASE_DIR, "scaler (1).pkl")

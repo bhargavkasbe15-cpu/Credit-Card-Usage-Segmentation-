@@ -50,3 +50,20 @@ if model is None or scaler is None:
     st.error("Model or Scaler files not found!")
     st.write("Debug Info - Files found in directory:", os.listdir(BASE_DIR))
     st.stop() # Stops the app from crashing further down
+    import os
+import pickle
+import streamlit as st
+
+# Make sure these are on separate lines
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "cluster_model (1).pkl")
+scaler_path = os.path.join(BASE_DIR, "scaler (1).pkl")
+
+# Now load the files
+if os.path.exists(model_path) and os.path.exists(scaler_path):
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+    with open(scaler_path, "rb") as f:
+        scaler = pickle.load(f)
+else:
+    st.error("Files still not found!")

@@ -85,4 +85,7 @@ if os.path.exists(model_path) and os.path.exists(scaler_path):
     scaler = pickle.load(open(scaler_path, "rb"))
 else:
     st.error(f"Files still not found! Make sure they are in: {BASE_DIR}")
-    
+    import os
+import streamlit as st
+
+st.write("Files in current folder:", os.listdir())
